@@ -159,7 +159,7 @@ class Interfacesubtotaltrigger extends DolibarrTriggers
 	  * 	@param		conf		$conf		Object conf
 	  * 	@return		int						<0 if KO, 0 if no triggered ran, >0 if OK
 	  */
-	public function runTrigger($action, $object, $user, $langs, $conf)
+	public function runTrigger($action, $object, User $user, Translate $langs, Conf $conf)
 	{
 		return $this->run_trigger($action, $object, $user, $langs, $conf);
 	}
