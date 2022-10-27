@@ -2019,7 +2019,7 @@ class ActionsSubtotal
 	 */
 	function printObjectLine ($parameters, &$object, &$action, $hookmanager)
 	{
-		global $conf, $langs, $user, $db, $bc, $inputalsopricewithtax;	// InfraS change
+		global $conf, $langs, $user, $db, $bc, $inputalsopricewithtax, $usercandelete, $toselect;	// InfraS change
 
 		$num = &$parameters['num'];
 		$line = &$parameters['line'];
@@ -2145,7 +2145,7 @@ class ActionsSubtotal
 			// HTML 5 data for js
             $data = $this->_getHtmlData($parameters, $object, $action, $hookmanager);
 
-
+			//var_dump("OIEFJNONEFONIEFOINEFOENIFOINEF");exit;
 			?>
 			<tr <?php echo $bc[$var]; $var=!$var; echo $data; ?> rel="subtotal" id="row-<?php echo $line->id ?>" style="<?php
 					if (!empty($conf->global->SUBTOTAL_USE_NEW_FORMAT))
@@ -2372,7 +2372,15 @@ class ActionsSubtotal
 
 					}
 			?></td>
-
+				<?php
+				if ($object->element == 'commande'){
+					print '<td></td>';
+				}
+				if ($object->element == 'supplier_proposal'){
+					print '<td></td>';
+					print '<td></td>';
+				}
+				?>
 			<?php
 				if($line->qty>90) {
 					/* Total */
@@ -2433,7 +2441,6 @@ class ActionsSubtotal
 
 				?>
 			</td>
-
 			<td align="center" class="nowrap linecoldelete">
 				<?php
 
@@ -2472,9 +2479,26 @@ class ActionsSubtotal
 			<?php } ?>
 
 
-			<?php  if($action == 'selectlines'){ // dolibarr 8 ?>
-			<td class="linecolcheck" align="center"><input type="checkbox" class="linecheckbox" name="line_checkbox[<?php echo $i+1; ?>]" value="<?php echo $line->id; ?>" ></td>
-			<?php } ?>
+				<?php if ($conf->global->MASSACTION_CARD_ENABLE_SELECTLINES && $object->status == $object::STATUS_DRAFT && $usercandelete || $action == 'selectlines') { // dolibarr 8
+
+					if ($action == 'editline' && GETPOST('lineid', 'int') == $line->id) { ?>
+						<td></td>
+						<?php
+					} else {
+						$checked = '';
+//						if ($object->element == 'commande'){
+//							print '<td></td>';
+//						}
+
+						if (in_array($line->id,$toselect)){
+							$checked = 'checked';
+						}
+						?>
+						<td class='linecolcheck center'><input type='checkbox' class='linecheckbox' <?php print $checked; ?> name="line_checkbox[<?php print $i + 1; ?>]" value="<?php print $line->id; ?>"></td>
+						<?php
+					}
+				}
+				?>
 
 			</tr>
 			<?php
