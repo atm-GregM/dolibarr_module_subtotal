@@ -2372,7 +2372,8 @@ class ActionsSubtotal
 
 					}
 			?></td>
-				<?php
+<!--				--><?php
+				//var_dump($object->element);exit;
 				if ($object->element == 'commande'){
 					print '<td></td>';
 				}
@@ -2380,7 +2381,12 @@ class ActionsSubtotal
 					print '<td></td>';
 					print '<td></td>';
 				}
+				if (($object->element == 'propal' || $object->element == 'commande' || $object->element == 'facture') && $object->status == $object::STATUS_VALIDATED){
+					print '<td></td>';
+					print '<td></td>';
+				}
 				?>
+
 			<?php
 				if($line->qty>90) {
 					/* Total */
@@ -2472,18 +2478,19 @@ class ActionsSubtotal
 
 			<?php
 			if ($num > 1 && empty($conf->browser->phone)) { ?>
-			<td align="center" class="linecolmove tdlineupdown">
-			</td>
-			<?php } else { ?>
+<!--			<td align="center" class="linecolmove tdlineupdown">-->
+<!--			</td>-->
 			<td align="center"<?php echo ((empty($conf->browser->phone) && ($object->statut == 0  && $createRight ))?' class="tdlineupdown"':''); ?>></td>
 			<?php } ?>
 
 
-				<?php if ($conf->global->MASSACTION_CARD_ENABLE_SELECTLINES && $object->status == $object::STATUS_DRAFT && $usercandelete || $action == 'selectlines') { // dolibarr 8
+				<?php
+				$Telement = array('propal','commande','facture','supplier_proposal','order_supplier','invoice_supplier');
+				//var_dump($object->element);exit;
+				if ($conf->global->MASSACTION_CARD_ENABLE_SELECTLINES && $object->status == $object::STATUS_DRAFT && $usercandelete && in_array($object->element,$Telement)|| $action == 'selectlines' ) { // dolibarr 8
 
-					if ($action == 'editline' && GETPOST('lineid', 'int') == $line->id) { ?>
-						<td></td>
-						<?php
+					if ($action == 'editline' && GETPOST('lineid', 'int') == $line->id) {
+						//print '<td></td>';
 					} else {
 						$checked = '';
 //						if ($object->element == 'commande'){
@@ -2493,9 +2500,13 @@ class ActionsSubtotal
 						if (in_array($line->id,$toselect)){
 							$checked = 'checked';
 						}
-						?>
-						<td class='linecolcheck center'><input type='checkbox' class='linecheckbox' <?php print $checked; ?> name="line_checkbox[<?php print $i + 1; ?>]" value="<?php print $line->id; ?>"></td>
-						<?php
+
+						if ($action != "editline"){
+/*							print "<td class='linecolcheck center'><input type='checkbox' class='linecheckbox'" . $checked . "name='line_checkbox[<?php print $i + 1; ?>]' value=" . $line->id . '></td>';*/
+							?>
+							<td class='linecolcheck center'><input type='checkbox' class='linecheckbox' <?php print $checked; ?> name="line_checkbox[<?php print $i + 1; ?>]" value="<?php print $line->id; ?>" ></td>
+							<?php
+						}
 					}
 				}
 				?>
